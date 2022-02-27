@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <HelloWorld msg="Welcome to ur Kamban app"/>
+    <HelloWorld msg="Kamban@pp"/>
   </div>
 </template>
 
