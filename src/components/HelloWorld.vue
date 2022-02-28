@@ -14,24 +14,7 @@
 
     <!-- Dialog for login or register -->
     <q-dialog v-model="isDialogOpen">
-      <q-card>
-        <q-toolbar>
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo.svg" />
-          </q-avatar>
-
-          <q-toolbar-title
-            ><span class="text-weight-bold">Quasar</span>
-            Framework</q-toolbar-title
-          >
-
-          <q-btn flat round dense icon="close" v-close-popup />
-        </q-toolbar>
-
-        <q-card-section>
-          Here the login options
-        </q-card-section>
-      </q-card>
+      <Login />
     </q-dialog>
   </q-page>
 </template>
@@ -40,10 +23,14 @@
 
 <script>
 import { ref } from "vue";
+import Login from "@/components/user/Login.vue";
 
 export default {
   name: "HelloWorld",
   props: ["msg"],
+  components: {
+    Login,
+  },
   setup() {
     const isDialogOpen = ref(false);
     return { isDialogOpen };
