@@ -3,29 +3,42 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword 
+  signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth, provider } from "@/firebase.js";
 import { useRouter } from "vue-router";
 
 export const useUser = () => {
   const route = useRouter();
+
   const registerUserWithEmailAndPassword = async (email, password) => {
-    const result = await createUserWithEmailAndPassword(auth, email, password);
-    const user = result.user;
-    if (user) {
-      // await sendEmailVerification(auth.currentUser);
-      route.push("/");
-      // TODO: send email verification and the notification in the bottom of the screen
+    try {
+      const result = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = await result.user;
+      console.dir(user);
+      return true;
+      // TODO: Send email verification
+    } catch (error) {
+      console.error(error.code, error.message);
+      return false;
     }
   };
+
   const loginWithEmailAndPassword = async (email, password) => {
+    try {
       const result = await signInWithEmailAndPassword(auth, email, password);
-      const user = result.user;
+      const user = await result.user;
       if (user) {
         //TODO: redirect to kamban page
         route.push("/profile");
       }
+    } catch (error) {
+      console.error(error.code, error.message);
+    }
   };
   const loginWithGoogle = async () => {
     try {
@@ -62,10 +75,14 @@ export const useUser = () => {
     }
   };
 
+  // get the current user, if null user is not signed in
+  const user = auth.currentUser;
+
   return {
     registerUserWithEmailAndPassword,
     loginWithEmailAndPassword,
     loginWithGoogle,
     logout,
+    user,
   };
 };

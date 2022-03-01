@@ -6,9 +6,9 @@
       </q-toolbar-title>
       <q-btn flat round dense icon="close" v-close-popup />
     </q-toolbar>
-    <h5 class="q-mb-none q-mt-sm q-pl-md">Sign In</h5>
+    <h5 class="q-mb-none q-mt-sm q-pl-md">Sign Up</h5>
     <q-card-section>
-      <q-form @submit.prevent="loginWithEmailAndPassword">
+      <q-form @submit.prevent="registerUserWithEmailAndPassword">
         <q-input
           v-model="email"
           label="Email"
@@ -32,21 +32,31 @@
             />
           </template>
         </q-input>
-        <q-btn color="indigo" class="q-mt-lg" type="submit">Sign In</q-btn>
+        <q-input
+          v-model="rep_password"
+          label="Repeat Password"
+          :type="isPswVisible ? 'text' : 'password'"
+          hint="Ingress password again"
+        >
+          <template #append>
+            <q-icon
+              :name="isPswVisible ? 'visibility' : 'visibility_off'"
+              class="cursor-pointer"
+              @click="isPswVisible = !isPswVisible"
+            />
+          </template>
+        </q-input>
+
+        <q-btn color="indigo" class="q-mt-xl" type="submit">
+          Create New Account
+        </q-btn>
         <span class="q-mt-md q-mx-sm vertical-bottom">
-          or create a
-          <span class="text-bold cursor-pointer text-indigo" @click="register">
-            New Account.
+          or
+          <span class="text-bold cursor-pointer text-indigo" @click="login">
+            Sign In.
           </span>
         </span>
       </q-form>
-    </q-card-section>
-
-    <q-card-section class="text-center q-mt-sm">
-      <q-btn color="blue" @click.prevent="loginWithGoogle()">
-        <i class="fab fa-google"></i>
-        <span class="q-pl-sm">Continue with Google</span>
-      </q-btn>
     </q-card-section>
   </q-card>
 </template>
@@ -62,25 +72,30 @@ export default {
 
     const email = ref(null);
     const password = ref(null);
+    const rep_password = ref(null);
     const isPswVisible = ref(false);
 
-    const loginWithGoogle = () => {
-      userActions.loginWithGoogle();
-    };
-    const loginWithEmailAndPassword = () => {
-      userActions.loginWithEmailAndPassword(email.value, password.value);
+    const registerUserWithEmailAndPassword = async () => {
+      const response = await userActions.registerUserWithEmailAndPassword(
+        email.value,
+        password.value
+      );
+      if(response){
+        emit("closeDialog");
+      }
     };
 
-    const register = () => {
+    const login = () => {
       emit("changeDialog");
     };
+
     return {
       email,
       password,
+      rep_password,
       isPswVisible,
-      register,
-      loginWithGoogle,
-      loginWithEmailAndPassword,
+      registerUserWithEmailAndPassword,
+      login,
     };
   },
 };
