@@ -2,6 +2,7 @@
   <q-card class="login-card">
     <q-toolbar class="bg-indigo text-white glossy shadow-2">
       <q-toolbar-title>
+        <q-icon name="whatshot" class="q-mr-sm"></q-icon>
         <span class="text-weight-bold">Kamban@pp</span>
       </q-toolbar-title>
       <q-btn flat round dense icon="close" v-close-popup />
@@ -80,7 +81,7 @@ export default {
         email.value,
         password.value
       );
-      if(response){
+      if (response) {
         emit("closeDialog");
       }
     };
