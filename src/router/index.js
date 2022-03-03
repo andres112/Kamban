@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import store from "../store/index.js";
+import { auth } from "@/firebase.js";
 
 const routes = [
   {
@@ -13,21 +14,21 @@ const routes = [
     name: "Kamban",
     component: () =>
       import(/* webpackChunkName: "kamban" */ "../views/Kamban.vue"),
-    meta: { navbar: true },
+    meta: { navbar: true, requieresAuth: true },
   },
   {
     path: "/profile",
     name: "Profile",
     component: () =>
       import(/* webpackChunkName: "profile" */ "../views/Profile.vue"),
-    meta: { navbar: true },
+    meta: { navbar: true, requieresAuth: true },
   },
   {
     path: "/settings",
     name: "Settings",
     component: () =>
       import(/* webpackChunkName: "settings" */ "../views/Settings.vue"),
-    meta: { navbar: true },
+    meta: { navbar: true, requieresAuth: true },
   },
 ];
 
@@ -42,6 +43,12 @@ router.beforeEach(async (to, from, next) => {
     store.commit("settings/changeNavbarVisible", true);
   } else {
     store.commit("settings/changeNavbarVisible", false);
+  }
+  if (
+    to.matched.some((record) => record.meta.requieresAuth) &&
+    !auth.currentUser
+  ) {
+    next("/");
   }
   next();
 });

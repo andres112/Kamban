@@ -14,7 +14,10 @@ export default {
   name: "Profile",
   setup() {
     const userActions = useUser();
-    const user = computed(() => userActions.user);
+    const user = computed(() => {
+      console.log("userActions.user", userActions.currentUser);
+      return userActions.currentUser;
+    });
     return { user };
   },
 };

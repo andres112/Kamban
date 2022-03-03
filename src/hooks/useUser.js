@@ -13,7 +13,7 @@ export const useUser = () => {
   const route = useRouter();
 
   // get the current user, if null user is not signed in
-  const user = auth.currentUser;
+  const currentUser = auth.currentUser;
 
   const registerUserWithEmailAndPassword = async (email, password) => {
     try {
@@ -41,7 +41,7 @@ export const useUser = () => {
       }
     }
     try {
-      await updateProfile(user, cleanData);
+      await updateProfile(auth.currentUser, cleanData);
     } catch (error) {
       console.error(error.code, error.message);
     }
@@ -100,6 +100,6 @@ export const useUser = () => {
     loginWithGoogle,
     logout,
     updateUser,
-    user,
+    currentUser,
   };
 };
