@@ -4,12 +4,16 @@ import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { auth, provider } from "@/firebase.js";
 import { useRouter } from "vue-router";
 
 export const useUser = () => {
   const route = useRouter();
+
+  // get the current user, if null user is not signed in
+  const user = auth.currentUser;
 
   const registerUserWithEmailAndPassword = async (email, password) => {
     try {
@@ -25,6 +29,21 @@ export const useUser = () => {
     } catch (error) {
       console.error(error.code, error.message);
       return false;
+    }
+  };
+
+  const updateUser = async (data) => {
+    const ALLOWED_PARAMS = ["displayName", "photoURL", "phoneNumber"];
+    let cleanData = {};
+    for (let key in data) {
+      if (ALLOWED_PARAMS.includes(key)) {
+        cleanData[key] = data[key];
+      }
+    }
+    try {
+      await updateProfile(user, cleanData);
+    } catch (error) {
+      console.error(error.code, error.message);
     }
   };
 
@@ -75,14 +94,12 @@ export const useUser = () => {
     }
   };
 
-  // get the current user, if null user is not signed in
-  const user = auth.currentUser;
-
   return {
     registerUserWithEmailAndPassword,
     loginWithEmailAndPassword,
     loginWithGoogle,
     logout,
+    updateUser,
     user,
   };
 };

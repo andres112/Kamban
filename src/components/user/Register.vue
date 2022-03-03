@@ -11,6 +11,18 @@
     <q-card-section>
       <q-form @submit.prevent="registerUserWithEmailAndPassword">
         <q-input
+          v-model.trim="username"
+          label="Username"
+          name="username"
+          type="text"
+          aria-required="true"
+          :rules="usernameRules"
+          lazy-rules
+        >
+          <template #append> <q-icon name="face" /></template>
+          <template #error> Please use min 3 and max 15 characters. </template>
+        </q-input>
+        <q-input
           v-model="email"
           label="Email"
           hint="username@correo.com"
@@ -71,6 +83,7 @@ export default {
   setup(props, { emit }) {
     const userActions = useUser();
 
+    const username = ref("");
     const email = ref(null);
     const password = ref(null);
     const rep_password = ref(null);
@@ -82,6 +95,8 @@ export default {
         password.value
       );
       if (response) {
+        // after create user update the display name
+        await userActions.updateUser({ displayName: username.value });
         emit("closeDialog");
       }
     };
@@ -90,12 +105,21 @@ export default {
       emit("changeDialog");
     };
 
+    // Inputs rules
+    const usernameRules = [
+      (val) => !!val || "Username is required",
+      (val) =>
+        (val.length >= 3 && val.length <= 15) || "Min 3 and max 15 characters",
+    ];
+
     return {
+      username,
       email,
       password,
       rep_password,
       isPswVisible,
       registerUserWithEmailAndPassword,
+      usernameRules,
       login,
     };
   },
