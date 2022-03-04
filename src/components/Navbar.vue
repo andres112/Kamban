@@ -4,10 +4,11 @@
       <q-btn flat round dense icon="menu" class="q-mr-sm" />
 
       <q-toolbar-title class="text-h5">Kamban@pp</q-toolbar-title>
+      {{ avatar }}
 
       <q-btn round class="float-right">
-        <q-avatar size="xl" v-if="userAvatar">
-          <img :src="userAvatar" />
+        <q-avatar size="xl" v-if="avatar">
+          <img :src="avatar" />
         </q-avatar>
         <q-avatar icon="face" size="xl" v-else />
         <q-menu fit anchor="bottom left" self="top right">
@@ -31,7 +32,7 @@
 
 <script>
 import { useStore } from "vuex";
-import { computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useUser } from "@/hooks/useUser";
 
 export default {
@@ -39,15 +40,25 @@ export default {
   setup() {
     const store = useStore();
     const userActions = useUser();
+    const currentUser = ref({});
 
     const isVisible = computed(() => {
       return store.state.settings.navbar?.isVisible;
     });
 
+    onMounted(async () => {
+      currentUser.value = await userActions.user();
+    });
+
+    // TODO: implement and state for rendering avatar and user info
+    const avatar = computed(() => {
+      return currentUser.value?.providerData;
+    });
+
     const logout = () => {
       userActions.logout();
     };
-    return { isVisible, logout };
+    return { isVisible, logout, currentUser, avatar };
   },
 };
 </script>

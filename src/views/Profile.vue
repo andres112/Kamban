@@ -8,16 +8,20 @@
 
 <script>
 import { useUser } from "@/hooks/useUser";
-import { computed } from "vue";
+import { ref, onMounted } from "vue";
 
 export default {
   name: "Profile",
   setup() {
     const userActions = useUser();
-    const user = computed(() => {
-      console.log("userActions.user", userActions.currentUser);
-      return userActions.currentUser;
+    const user = ref({});
+
+    // TODO: Remove this, logic is in component not in view
+
+    onMounted(async () => {
+      user.value = await userActions.user();
     });
+
     return { user };
   },
 };

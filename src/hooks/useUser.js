@@ -6,24 +6,21 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import { auth, provider } from "@/firebase.js";
+import { auth, provider, currentUser } from "@/firebase.js";
 import { useRouter } from "vue-router";
 
 export const useUser = () => {
   const route = useRouter();
 
   // get the current user, if null user is not signed in
-  const currentUser = auth.currentUser;
+  //TODO: remove this when state for user is implemented
+  const user = async () => {
+    return await currentUser();
+  };
 
   const registerUserWithEmailAndPassword = async (email, password) => {
     try {
-      const result = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = await result.user;
-      console.dir(user);
+      await createUserWithEmailAndPassword(auth, email, password);
       return true;
       // TODO: Send email verification
     } catch (error) {
@@ -100,6 +97,6 @@ export const useUser = () => {
     loginWithGoogle,
     logout,
     updateUser,
-    currentUser,
+    user,
   };
 };

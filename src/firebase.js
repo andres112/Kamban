@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, serverTimestamp } from "firebase/firestore"; //collection, getDocs, addDoc, deleteDoc, updateDoc, setDoc, doc
-import { getAuth, GoogleAuthProvider } from "firebase/auth"; // signInWithPopup, signInWithRedirect  // createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged
+import { getAuth, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth"; // signInWithPopup, signInWithRedirect  // createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -20,4 +20,17 @@ const auth = getAuth(); // singleton for auth
 const provider = new GoogleAuthProvider(); // singleton for GoogleAuthProvider
 const timestamp = serverTimestamp(); // singleton for timestamp
 
-export { db, auth, provider, timestamp};
+const currentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (user) => {
+        resolve(user);
+        unsubscribe();
+      },
+      reject
+    );
+  });
+};
+
+export { db, auth, provider, timestamp, currentUser };

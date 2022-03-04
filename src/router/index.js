@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import store from "../store/index.js";
-import { auth } from "@/firebase.js";
+import { currentUser } from "@/firebase.js";
 
 const routes = [
   {
@@ -44,12 +44,14 @@ router.beforeEach(async (to, from, next) => {
   } else {
     store.commit("settings/changeNavbarVisible", false);
   }
-  if (
-    to.matched.some((record) => record.meta.requieresAuth) &&
-    !auth.currentUser
-  ) {
+
+  const user = await currentUser();
+  console.log(user);
+  if (to.matched.some((record) => record.meta.requieresAuth) && !user) {
     next("/");
   }
+  //TODO: commit user to state "user"
+  //store.commit("user/setUser", user.providerData[0]);
   next();
 });
 
