@@ -37,21 +37,20 @@ const router = createRouter({
   routes,
 });
 
-// control of the navbar visibility
 router.beforeEach(async (to, from, next) => {
-  if (to.matched.some((record) => record.meta.navbar)) {
-    store.commit("settings/changeNavbarVisible", true);
-  } else {
-    store.commit("settings/changeNavbarVisible", false);
-  }
-
   const user = await currentUser();
   console.log(user);
   if (to.matched.some((record) => record.meta.requieresAuth) && !user) {
     next("/");
   }
-  //TODO: commit user to state "user"
-  //store.commit("user/setUser", user.providerData[0]);
+  // update user information
+  store.commit("user/setUserInfo", user ? user.providerData[0] : user);
+
+  // control of the navbar visibility
+  store.commit(
+    "settings/changeNavbarVisible",
+    to.matched.some((record) => record.meta.navbar)
+  );
   next();
 });
 
