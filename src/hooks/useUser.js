@@ -50,7 +50,7 @@ export const useUser = () => {
       const user = await result.user;
       if (user) {
         //TODO: redirect to kamban page
-        route.push("/profile");
+        route.push("/main");
       }
     } catch (error) {
       console.error(error.code, error.message);
@@ -67,7 +67,7 @@ export const useUser = () => {
         //   result
         // );
         // const token = await credential.accessToken;
-        route.push("/profile");
+        route.push("/main");
       }
     } catch (error) {
       // Handle Errors here.

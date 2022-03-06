@@ -4,15 +4,21 @@
       <q-btn flat round dense icon="menu" class="q-mr-sm" />
 
       <q-toolbar-title class="text-h5">Kamban@pp</q-toolbar-title>
-      {{ avatar }}
 
       <q-btn round class="float-right">
         <q-avatar size="xl" v-if="avatar">
-          <img :src="avatar" />
+          <q-img :src="avatar" alt="user avatar" referrerpolicy="no-referrer" />
         </q-avatar>
         <q-avatar icon="face" size="xl" v-else />
         <q-menu fit anchor="bottom left" self="top right">
           <q-list style="min-width: 150px">
+            <q-item class="column justify-center items-center">
+              <q-avatar size="6rem" v-if="avatar">
+                <q-img :src="avatar" alt="user avatar menu" referrerpolicy="no-referrer"/>
+              </q-avatar>
+              <q-avatar icon="face" size="6rem" v-else />
+              <small class ="q-pt-sm">{{email}}</small>
+            </q-item>
             <q-item v-close-popup class="row justify-center">
               <q-btn
                 color="red"
@@ -32,7 +38,7 @@
 
 <script>
 import { useStore } from "vuex";
-import { ref, computed, onMounted } from "vue";
+import { computed } from "vue";
 import { useUser } from "@/hooks/useUser";
 
 export default {
@@ -40,25 +46,22 @@ export default {
   setup() {
     const store = useStore();
     const userActions = useUser();
-    const currentUser = ref({});
 
     const isVisible = computed(() => {
       return store.state.settings.navbar?.isVisible;
     });
 
-    onMounted(async () => {
-      currentUser.value = await userActions.user();
-    });
-
-    // TODO: implement and state for rendering avatar and user info
     const avatar = computed(() => {
-      return currentUser.value?.providerData;
+      return store.state.user.userInfo?.photoURL;
+    });
+    const email = computed(() => {
+      return store.state.user.userInfo?.email;
     });
 
     const logout = () => {
       userActions.logout();
     };
-    return { isVisible, logout, currentUser, avatar };
+    return { isVisible, logout, avatar, email };
   },
 };
 </script>
