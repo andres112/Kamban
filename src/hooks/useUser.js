@@ -5,24 +5,23 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  sendEmailVerification,
 } from "firebase/auth";
-import { auth, provider, currentUser } from "@/firebase.js";
+import { auth, provider } from "@/firebase.js";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 export const useUser = () => {
   const route = useRouter();
+  const store = useStore();
 
   // get the current user, if null user is not signed in
-  //TODO: remove this when state for user is implemented
-  const user = async () => {
-    return await currentUser();
-  };
 
   const registerUserWithEmailAndPassword = async (email, password) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
+      sendEmail("One email was sent, please verify. ", "info");
       return true;
-      // TODO: Send email verification
     } catch (error) {
       console.error(error.code, error.message);
       return false;
@@ -48,12 +47,18 @@ export const useUser = () => {
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
       const user = await result.user;
-      if (user) {
-        //TODO: redirect to kamban page
-        route.push("/main");
+      if (!user.emailVerified) {
+        sendEmail("The email verification is pending. ", "warning");
       }
+      route.push("/main");
     } catch (error) {
-      console.error(error.code, error.message);
+      console.error(error.code, "....", error.message);
+      if (error.code === "auth/user-not-found") {
+        store.commit("settings/setAlertNotification", {
+          text: "The user account was not found. ",
+          type: "negative",
+        });
+      }
     }
   };
   const loginWithGoogle = async () => {
@@ -91,12 +96,20 @@ export const useUser = () => {
     }
   };
 
+  const sendEmail = async (msgNotification, type) => {
+    await sendEmailVerification(auth.currentUser);
+    store.commit("settings/setAlertNotification", {
+      text: msgNotification,
+      type: type,
+    });
+  };
+
   return {
     registerUserWithEmailAndPassword,
     loginWithEmailAndPassword,
     loginWithGoogle,
     logout,
     updateUser,
-    user,
+    sendEmail,
   };
 };

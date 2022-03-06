@@ -1,17 +1,18 @@
 import { useQuasar } from "quasar";
+import { useStore } from "vuex";
 
 export const useNotification = () => {
-  const notify = (text, position, color = "indigo-7") => {
-    const $q = useQuasar();
+  const store = useStore();
+  const $q = useQuasar();
+  const notify = () => {
+    // dependency of state.alertNotification
 
-    return {
-      showNotif() {
-        $q.notify({
-          message: "Jim pinged you.",
-          color: "purple",
-        });
-      },
-    };
+    $q.notify({
+      message: store.state.settings.alertNotification?.text,
+      position: store.state.settings.alertNotification?.position ?? "bottom",
+      type: store.state.settings.alertNotification?.type ?? "ongoing",
+      textColor:"white"
+    });
   };
 
   return { notify };

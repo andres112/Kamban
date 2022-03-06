@@ -1,28 +1,27 @@
 <template>
   <q-page>
     <h1>Profile</h1>
-    <pre>{{ user }}</pre>
+    <pre>{{ userInfo }}</pre>
     <q-btn to="/settings" label="to Settings"></q-btn>
   </q-page>
 </template>
 
 <script>
-import { useUser } from "@/hooks/useUser";
-import { ref, onMounted } from "vue";
+import { useStore } from "vuex";
+import { computed } from "vue";
 
 export default {
   name: "Profile",
   setup() {
-    const userActions = useUser();
-    const user = ref({});
+    const store = useStore();
 
-    // TODO: Remove this, logic is in component not in view
+    // this logic in component
 
-    onMounted(async () => {
-      user.value = await userActions.user();
+    const userInfo = computed(() => {
+      return store.state.user.userInfo;
     });
 
-    return { user };
+    return { userInfo };
   },
 };
 </script>

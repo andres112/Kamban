@@ -1,6 +1,7 @@
 const state = {
   navbar: { isVisible: false },
   darkMode: false,
+  alertNotification: {},
 };
 const mutations = {
   changeNavbarVisible(state, value) {
@@ -8,6 +9,13 @@ const mutations = {
   },
   setDarkMode(state, value) {
     state.darkMode = value;
+  },
+  setAlertNotification(state, payload) {
+    state.alertNotification = {
+      text: payload?.text,
+      position: payload?.position,
+      type: payload?.type,
+    };
   },
 };
 const actions = {};
