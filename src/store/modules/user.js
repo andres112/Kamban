@@ -1,6 +1,7 @@
 const state = {
   userInfo: null,
   userToken: null,
+  userId: null,
 };
 const mutations = {
   setUserInfo(state, payload) {
@@ -8,6 +9,9 @@ const mutations = {
   },
   setUserToken(state, payload) {
     state.userToken = payload;
+  },
+  setUserId(state, payload) {
+    state.userId = payload;
   },
 };
 const actions = {};

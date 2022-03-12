@@ -4,22 +4,36 @@
       <q-toolbar-title>
         <span class="text-bold">{{ colName }}</span>
       </q-toolbar-title>
-      <q-btn flat round dense icon="add_box" v-if="addBtn" />
+      <q-btn
+        flat
+        round
+        dense
+        icon="add_box"
+        v-if="addBtn"
+        @click="setVisibility(true)"
+      />
     </q-toolbar>
 
     <q-page v-if="loading"><slot name="loading"></slot></q-page>
+    <div class="row">
+      <!-- Card components -->
+      <card
+        v-for="cardContent in colContent"
+        :key="cardContent.id"
+        :content="cardContent"
+        class="full-width"
+      ></card>
+    </div>
 
-    <!-- Card components -->
-    <card
-      v-for="cardContent in colContent"
-      :key="cardContent.id"
-      :content="cardContent"
-    ></card>
+    <!-- Create new task -->
+    <task-form />
   </div>
 </template>
 
 <script>
 import Card from "@/components/kamban/Card.vue";
+import TaskForm from "@/components/kamban/TaskForm.vue";
+import { provide, ref } from "vue";
 
 export default {
   name: "Column",
@@ -32,9 +46,16 @@ export default {
   },
   components: {
     Card,
+    TaskForm,
   },
   setup() {
-    return {};
+    const isVisible = ref(false);
+    const setVisibility = (visibility) => {
+      isVisible.value = visibility;
+    };
+    provide("taskFormVisible", { isVisible, setVisibility });
+
+    return { isVisible, setVisibility };
   },
 };
 </script>

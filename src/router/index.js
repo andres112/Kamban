@@ -46,6 +46,9 @@ router.beforeEach(async (to, from, next) => {
   // update user information
   store.commit("user/setUserInfo", user ? user.providerData[0] : user);
 
+  // update user id
+  store.commit("user/setUserId", user?.uid);
+
   // update user token
   store.commit("user/setUserToken", user ? user?.stsTokenManager : null);
 
