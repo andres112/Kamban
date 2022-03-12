@@ -1,5 +1,6 @@
 <template>
   <q-card class="login-card">
+    <!-- TODO: pending validation of inputs -->
     <q-toolbar class="bg-indigo text-white glossy shadow-2">
       <q-toolbar-title>
         <q-icon name="whatshot" class="q-mr-sm"></q-icon>

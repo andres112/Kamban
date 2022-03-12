@@ -1,7 +1,6 @@
 import {
   signOut,
   signInWithPopup,
-  GoogleAuthProvider,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
@@ -11,9 +10,14 @@ import { auth, provider } from "@/firebase.js";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
+import { useLoading } from "./useLoading";
+
 export const useUser = () => {
   const route = useRouter();
   const store = useStore();
+
+  //use of hook for loading
+  const { show, hide } = useLoading();
 
   // get the current user, if null user is not signed in
 
@@ -63,6 +67,7 @@ export const useUser = () => {
   };
   const loginWithGoogle = async () => {
     try {
+      show();
       const result = await signInWithPopup(auth, provider);
       // The signed-in user info.
       const user = await result.user;
@@ -81,10 +86,12 @@ export const useUser = () => {
       // The email of the user's account used.
       const email = error.email;
       // The AuthCredential type that was used.
-      const credential = GoogleAuthProvider.credentialFromError(error);
+      const credential = provider.credentialFromError(error);
       console.warn(
         `${errorCode}: ${errorMessage} \n ${email} \n ${credential}`
       );
+    } finally {
+      hide();
     }
   };
   const logout = async () => {

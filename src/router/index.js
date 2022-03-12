@@ -54,6 +54,11 @@ router.beforeEach(async (to, from, next) => {
     "settings/changeNavbarVisible",
     to.matched.some((record) => record.meta.navbar)
   );
+
+  // if user is already auth home will be replaced by main
+  if (to.path === "/" && user) {
+    next("/main");
+  }
   next();
 });
 
