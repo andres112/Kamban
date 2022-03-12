@@ -11,7 +11,8 @@ export const useNotification = () => {
       message: store.state.settings.alertNotification?.text,
       position: store.state.settings.alertNotification?.position ?? "bottom",
       type: store.state.settings.alertNotification?.type ?? "ongoing",
-      textColor:"white"
+      textColor:"white",
+      closeBtn:true
     });
   };
 
