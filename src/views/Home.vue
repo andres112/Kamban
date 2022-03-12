@@ -1,8 +1,8 @@
 <template>
-  <div class="home">
+  <q-page>
     <Home msg="Kamban@pp" />
     <small class="fixed-bottom-left q-pa-sm">version 1.0.0</small>
-  </div>
+  </q-page>
 </template>
 
 <script>

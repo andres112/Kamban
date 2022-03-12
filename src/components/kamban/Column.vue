@@ -1,15 +1,20 @@
 <template>
   <div :class="`col-${colSize}`" class="q-mx-none">
-    <q-toolbar class="bg-green text-white">
+    <q-toolbar class="bg-secondary text-white">
       <q-toolbar-title>
         <span class="text-bold">{{ colName }}</span>
       </q-toolbar-title>
       <q-btn flat round dense icon="add_box" v-if="addBtn" />
     </q-toolbar>
+
+    <q-page v-if="loading"><slot name="loading"></slot></q-page>
+
     <!-- Card components -->
-    <!-- TODO: replace with the real data -->
-    <card :content="{ name: 'Aja' }"></card>
-    <card :content="{ name: 'new' }"></card>
+    <card
+      v-for="cardContent in colContent"
+      :key="cardContent.id"
+      :content="cardContent"
+    ></card>
   </div>
 </template>
 
@@ -22,6 +27,8 @@ export default {
     colSize: { type: Number, default: 4 },
     colName: String,
     addBtn: Boolean,
+    colContent: Array,
+    loading: Boolean,
   },
   components: {
     Card,

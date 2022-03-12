@@ -1,8 +1,8 @@
 <template>
-  <q-card bordered v-if="isVisible" class="q-ma-xs">
+  <q-card bordered v-if="isVisible" class="q-ma-xs cardTask">
     <q-card-section>
       <div class="text-h6">{{ name }}</div>
-      <div class="text-subtitle2">Deadline</div>
+      <div class="text-caption">{{ getDate }}</div>
     </q-card-section>
     <q-separator inset />
     <q-card-section>
@@ -12,7 +12,8 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import moment from "moment";
 
 export default {
   name: "Card",
@@ -24,14 +25,23 @@ export default {
     if (props.content) {
       isVisible.value = true;
     }
+
+    const getDate = computed(() => {
+      const date = moment(props.content.date.seconds * 1000);
+      return date.format("MMM Do YYYY, h:mm");
+    });
+
     return {
       isVisible,
       name: props.content?.name,
       text: props.content?.text,
-      date: props.content?.date,
+      getDate,
     };
   },
 };
 </script>
 
-<style></style>
+<style lang="sass">
+.cardTask
+    cursor: pointer
+</style>
