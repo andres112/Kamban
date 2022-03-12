@@ -32,7 +32,7 @@ import Login from "@/components/user/Login.vue";
 import Register from "@/components/user/Register.vue";
 
 export default {
-  name: "HelloWorld",
+  name: "Home",
   props: ["msg"],
   components: {
     Login,
