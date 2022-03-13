@@ -4,7 +4,7 @@ import { Notify, Loading } from "quasar";
 
 // To be used on app.use(Quasar, { ... })
 export default {
-  config: {},
+  config: {animations: 'all'},
   plugins: {
     Notify,
     Loading,

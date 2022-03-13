@@ -1,12 +1,20 @@
 import { db, timestamp } from "@/firebase.js";
 import { ref } from "vue";
 import { useStore } from "vuex";
-import { collection, getDoc, getDocs, addDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  addDoc,
+  deleteDoc,
+} from "firebase/firestore";
 
 export const useDb = () => {
   const store = useStore();
 
   // TODO: change tasks for user identification. Each collection correspond to a user id
+
   const reference = collection(db, "tasks");
   const loading = ref(false);
 
@@ -41,6 +49,7 @@ export const useDb = () => {
     }
   };
 
+  // Create a new document in a collection
   const addTask = async (task) => {
     try {
       const payload = {
@@ -82,10 +91,29 @@ export const useDb = () => {
       loading.value = false;
     }
   };
+
+  const deleteTask = async (docId) => {
+    try {
+      await deleteDoc(doc(db, "tasks", docId));
+      store.commit("settings/setAlertNotification", {
+        text: "Task deleted successfully!",
+        type: "info",
+      });
+      // after deleting task get all task again
+      getAllTasks();
+    } catch (error) {
+      console.error(error);
+      store.commit("settings/setAlertNotification", {
+        text: "Upps!. Something happened. Check console for details.",
+        type: "negative",
+      });
+    } 
+  };
   return {
     getAllTasks,
     addTask,
     getTask,
     loading,
+    deleteTask,
   };
 };
