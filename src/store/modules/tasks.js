@@ -4,6 +4,7 @@ const state = {
   doneList: [],
   pauseList: [],
   STATES: ["todo", "progress", "done", "pause"],
+  currentTask: null,
 };
 const mutations = {
   setTasksList(state, { payload, type }) {
@@ -24,6 +25,10 @@ const mutations = {
         state.pauseList = payload || [];
         break;
     }
+  },
+
+  setCurrentTask(state, payload) {
+    state.currentTask = payload;
   },
 };
 const actions = {};

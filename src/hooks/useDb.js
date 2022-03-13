@@ -8,6 +8,7 @@ import {
   getDocs,
   addDoc,
   deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 
 export const useDb = () => {
@@ -92,8 +93,31 @@ export const useDb = () => {
     }
   };
 
+  // Update a document in a collection
+  const updateTask = async (docId, payload) => {
+    try {
+      //TODO: change tasks for user id
+      const docReference = doc(db, "tasks", docId);
+      await updateDoc(docReference, payload);
+      store.commit("settings/setAlertNotification", {
+        text: "Task updated successfully!",
+        type: "info",
+      });
+      // after updating update task in interface
+      getAllTasks();
+    } catch (error) {
+      console.error(error);
+      store.commit("settings/setAlertNotification", {
+        text: "Upps!. Something happened. Check console for details.",
+        type: "negative",
+      });
+    }
+  };
+
+  // Delete a document from a collection
   const deleteTask = async (docId) => {
     try {
+      //TODO: change tasks for user id
       await deleteDoc(doc(db, "tasks", docId));
       store.commit("settings/setAlertNotification", {
         text: "Task deleted successfully!",
@@ -107,13 +131,14 @@ export const useDb = () => {
         text: "Upps!. Something happened. Check console for details.",
         type: "negative",
       });
-    } 
+    }
   };
   return {
     getAllTasks,
     addTask,
     getTask,
-    loading,
     deleteTask,
+    updateTask,
+    loading,
   };
 };

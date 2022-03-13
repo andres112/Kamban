@@ -1,19 +1,16 @@
 <template>
-  <q-dialog
-    v-model="isVisible"
-    persistent
-    full-width
-    @hide="setVisibility(false)"
-  >
+  <q-dialog v-model="isVisible" persistent full-width @hide="closeWindow">
     <q-card>
       <q-toolbar class="bg-indigo text-white glossy shadow-2">
         <q-toolbar-title>
-          <span class="text-weight-bold">Create New Task</span>
+          <span class="text-weight-bold">{{
+            isEdition ? "Update Task" : "Create New Task"
+          }}</span>
         </q-toolbar-title>
         <q-btn flat round dense icon="close" v-close-popup />
       </q-toolbar>
       <q-card-section class="q-px-xl">
-        <q-form @submit.prevent="createTask">
+        <q-form>
           <!-- Task Name -->
           <q-input
             v-model="taskName"
@@ -64,15 +61,19 @@
             label="Description"
             name="taskDescription"
             type="textarea"
-            style="max-height: 300px"
+            style="max-height: 250px"
             clearable
             clear-icon="close"
             class="q-mt-md"
           >
           </q-input>
 
-          <q-btn color="indigo" class="q-mt-lg" type="submit">
-            Create Task
+          <q-btn
+            color="indigo"
+            class="q-mt-lg"
+            @click.prevent="isEdition ? modifyTask() : createTask()"
+          >
+            {{ isEdition ? "Update Task" : "Create Task" }}
           </q-btn>
         </q-form>
       </q-card-section>
@@ -81,28 +82,50 @@
 </template>
 
 <script>
-import { inject, ref } from "vue";
+import { inject, ref, watch } from "vue";
 import { useDb } from "@/hooks/useDb";
+import { useStore } from "vuex";
 import moment from "moment";
 import { Timestamp } from "firebase/firestore";
 
 export default {
   name: "TaskForm",
   setup() {
+    const store = useStore();
     const { isVisible, setVisibility } = inject("taskFormVisible");
 
     const taskName = ref(null);
     const taskDescription = ref(null);
     const taskDateTime = ref(moment().format("YYYY-MM-DD HH:mm"));
 
-    const db = useDb();
+    const isEdition = ref(false);
+
+    // call from hook useDb
+    const { addTask, updateTask } = useDb();
 
     const createTask = () => {
-      db.addTask({
+      addTask({
         name: taskName.value,
         text: taskDescription.value,
         date: Timestamp.fromDate(new Date(taskDateTime.value)),
       });
+      setVisibility(false);
+      clearForm();
+    };
+
+    const modifyTask = () => {
+      updateTask(store.state.tasks.currentTask.id, {
+        name: taskName.value,
+        text: taskDescription.value,
+        date: Timestamp.fromDate(new Date(taskDateTime.value)),
+        state: store.state.tasks.currentTask.state,
+      });
+      setVisibility(false);
+      clearForm();
+    };
+
+    const closeWindow = () => {
+      store.commit("tasks/setCurrentTask", null);
       setVisibility(false);
       clearForm();
     };
@@ -112,10 +135,28 @@ export default {
       taskDescription.value = null;
       taskDateTime.value = moment().format("YYYY-MM-DD HH:mm");
     };
+
+    watch(
+      () => store.state.tasks.currentTask,
+      () => {
+        isEdition.value = false;
+        if (store.state.tasks.currentTask) {
+          taskName.value = store.state.tasks.currentTask.name;
+          taskDescription.value = store.state.tasks.currentTask.text;
+          taskDateTime.value = moment(
+            store.state.tasks.currentTask.date.seconds * 1000
+          ).format("YYYY-MM-DD HH:mm");
+          isEdition.value = true;
+        }
+      }
+    );
     return {
       isVisible,
+      isEdition,
       setVisibility,
+      closeWindow,
       createTask,
+      modifyTask,
       taskName,
       taskDescription,
       taskDateTime,

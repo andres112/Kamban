@@ -1,13 +1,15 @@
 <template>
-  <q-card bordered v-if="isVisible" class="q-ma-xs cardTask">
+  <q-card bordered v-if="showCard" class="q-ma-xs cardTask">
     <q-card-section horizontal class="justify-between">
       <!-- content section -->
       <!-- TODO: include fields validation -->
       <q-card-section>
-        <div class="text-h6">{{ name }}</div>
+        <div class="text-h6">{{ cardContent.name }}</div>
         <div class="text-caption q-pb-md">{{ getDate }}</div>
         <q-separator />
-        <div class="text-body2 q-pt-md text-description">{{ text }}</div>
+        <div class="text-body2 q-pt-md text-description">
+          {{ cardContent.text }}
+        </div>
       </q-card-section>
 
       <!-- Menu section -->
@@ -27,11 +29,12 @@
             flat
             color="primary"
             icon="create"
-            @click.prevent="editTask"
+            @click.prevent="editCard"
             v-if="menuVisible"
           >
             <q-tooltip> Edit task </q-tooltip>
           </q-btn>
+          <!-- TODO: pending change state button -->
           <q-btn
             flat
             color="red"
@@ -41,13 +44,7 @@
           >
             <q-tooltip> Delete task </q-tooltip>
           </q-btn>
-          <q-btn
-            flat
-            color="green"
-            icon="sync_alt"
-            @click.prevent="changeTaskState"
-            v-if="menuVisible"
-          >
+          <q-btn flat color="green" icon="sync_alt" v-if="menuVisible">
             <q-tooltip> Move task </q-tooltip>
           </q-btn>
         </transition-group>
@@ -57,8 +54,9 @@
 </template>
 
 <script>
-import { computed, ref, watch } from "vue";
-import {useDb} from "@/hooks/useDb";
+import { computed, ref, watch, inject, reactive } from "vue";
+import { useDb } from "@/hooks/useDb";
+import { useStore } from "vuex";
 import moment from "moment";
 
 export default {
@@ -68,22 +66,35 @@ export default {
   },
   setup(props) {
     // Bring function from hook
-    const {deleteTask} = useDb();
-    const isVisible = ref(false);
+    const { deleteTask } = useDb();
+    // Bring store from vuex
+    const store = useStore();
+
+    let cardContent = reactive(props.content);
+
+    // call the provided props defined in Column.vue
+    const { setVisibility } = inject("taskFormVisible");
+
+    const showCard = ref(false);
     const menuVisible = ref(false);
 
     if (props.content) {
-      isVisible.value = true;
+      showCard.value = true;
     }
 
     const getDate = computed(() => {
-      const date = moment(props.content.date.seconds * 1000);
+      const date = moment(cardContent.date.seconds * 1000);
       return date.format("MMM Do YYYY, h:mm");
     });
 
     const deleteCard = () => {
       deleteTask(props.content.id);
-      isVisible.value = false;
+      showCard.value = false;
+    };
+
+    const editCard = () => {
+      setVisibility(true);
+      store.commit("tasks/setCurrentTask", props.content);
     };
 
     watch(
@@ -97,13 +108,26 @@ export default {
       }
     );
 
+    //TODO: pending include state functionality
+    watch(
+      () => props.content,
+      () => {
+        console.log("content changed");
+        cardContent.name = props.content.name;
+        cardContent.text = props.content.text;
+        cardContent.date = props.content.date;
+        cardContent.state = props.content.state;
+      },
+      { deep: true }
+    );
+
     return {
-      isVisible,
-      name: props.content?.name,
-      text: props.content?.text,
+      showCard,
+      cardContent,
       getDate,
       menuVisible,
-      deleteCard
+      deleteCard,
+      editCard,
     };
   },
 };
