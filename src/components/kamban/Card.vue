@@ -112,7 +112,6 @@ export default {
     watch(
       () => props.content,
       () => {
-        console.log("content changed");
         cardContent.name = props.content.name;
         cardContent.text = props.content.text;
         cardContent.date = props.content.date;

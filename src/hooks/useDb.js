@@ -4,6 +4,8 @@ import { useStore } from "vuex";
 import {
   collection,
   doc,
+  query,
+  where,
   getDoc,
   getDocs,
   addDoc,
@@ -23,7 +25,9 @@ export const useDb = () => {
   const getAllTasks = async () => {
     try {
       loading.value = true;
-      const tasks = await getDocs(reference);
+      // set a query to respect the rules in firebase
+      const q = query(reference, where("uid", "==", store.state.user.userId));
+      const tasks = await getDocs(q);
       const groupedTasks = tasks.docs.reduce((acc, t) => {
         const data = { ...t.data() };
         if (!(data?.state in acc)) {
