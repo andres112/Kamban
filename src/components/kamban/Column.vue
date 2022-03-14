@@ -1,6 +1,9 @@
 <template>
   <div :class="`col-${colSize}`" class="q-mx-none">
-    <q-toolbar class="bg-secondary text-white">
+    <q-toolbar
+      class="bg-secondary text-white"
+      :class="'bg-' + colColor ?? 'bg-secondary'"
+    >
       <q-toolbar-title>
         <span class="text-bold">{{ colName }}</span>
       </q-toolbar-title>
@@ -25,8 +28,10 @@
       ></card>
     </div>
 
-    <!-- Create new task -->
+    <!-- Create new task form -->
     <task-form />
+
+    <!-- TODO: column for Paused tasks -->
   </div>
 </template>
 
@@ -40,6 +45,7 @@ export default {
   props: {
     colSize: { type: Number, default: 4 },
     colName: String,
+    colColor: String,
     addBtn: Boolean,
     colContent: Array,
     loading: Boolean,

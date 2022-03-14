@@ -34,7 +34,6 @@
           >
             <q-tooltip> Edit task </q-tooltip>
           </q-btn>
-          <!-- TODO: pending change state button -->
           <q-btn
             flat
             color="red"
@@ -46,6 +45,23 @@
           </q-btn>
           <q-btn flat color="green" icon="sync_alt" v-if="menuVisible">
             <q-tooltip> Move task </q-tooltip>
+            <q-menu
+              anchor="bottom start"
+              self="top middle"
+              transition-show="rotate"
+              transition-hide="rotate"
+            >
+              <q-list dense>
+                <q-item
+                  clickable
+                  v-for="state in stateOptions"
+                  :key="state.value"
+                  @click.stop="moveCard(state)"
+                >
+                  {{ state.name }}
+                </q-item>
+              </q-list>
+            </q-menu>
           </q-btn>
         </transition-group>
       </q-card-actions>
@@ -59,6 +75,13 @@ import { useDb } from "@/hooks/useDb";
 import { useStore } from "vuex";
 import moment from "moment";
 
+const STATE_OPTIONS = [
+  { value: "todo", name: "ToDo" },
+  { value: "progress", name: "Progress" },
+  { value: "done", name: "Done" },
+  { value: "pause", name: "Paused" },
+];
+
 export default {
   name: "Card",
   props: {
@@ -66,7 +89,7 @@ export default {
   },
   setup(props) {
     // Bring function from hook
-    const { deleteTask } = useDb();
+    const { deleteTask, updateTask } = useDb();
     // Bring store from vuex
     const store = useStore();
 
@@ -86,6 +109,9 @@ export default {
       const date = moment(cardContent.date.seconds * 1000);
       return date.format("MMM Do YYYY, h:mm");
     });
+    const stateOptions = computed(() => {
+      return STATE_OPTIONS.filter((state) => state.value !== cardContent.state);
+    });
 
     const deleteCard = () => {
       deleteTask(props.content.id);
@@ -95,6 +121,10 @@ export default {
     const editCard = () => {
       setVisibility(true);
       store.commit("tasks/setCurrentTask", props.content);
+    };
+
+    const moveCard = (state) => {
+      updateTask(cardContent.id, { state: state.value });
     };
 
     watch(
@@ -127,6 +157,8 @@ export default {
       menuVisible,
       deleteCard,
       editCard,
+      moveCard,
+      stateOptions,
     };
   },
 };
