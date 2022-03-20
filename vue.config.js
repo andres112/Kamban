@@ -8,5 +8,7 @@ module.exports = {
   transpileDependencies: ["quasar"],
   devServer: {
     host: "localhost",
+    hot: true,
+    compress: true,
   },
 };
