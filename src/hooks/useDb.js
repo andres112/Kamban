@@ -15,9 +15,6 @@ import {
 
 export const useDb = () => {
   const store = useStore();
-
-  // TODO: change tasks for user identification. Each collection correspond to a user id
-
   const reference = collection(db, "tasks");
   const loading = ref(false);
 
@@ -26,6 +23,7 @@ export const useDb = () => {
     try {
       loading.value = true;
       // set a query to respect the rules in firebase
+      // Only retrieving the task from userId
       const q = query(reference, where("uid", "==", store.state.user.userId));
       const tasks = await getDocs(q);
       const groupedTasks = tasks.docs.reduce((acc, t) => {
@@ -100,7 +98,6 @@ export const useDb = () => {
   // Update a document in a collection
   const updateTask = async (docId, payload) => {
     try {
-      //TODO: change tasks for user id
       const docReference = doc(db, "tasks", docId);
       await updateDoc(docReference, payload);
       store.commit("settings/setAlertNotification", {
@@ -121,7 +118,6 @@ export const useDb = () => {
   // Delete a document from a collection
   const deleteTask = async (docId) => {
     try {
-      //TODO: change tasks for user id
       await deleteDoc(doc(db, "tasks", docId));
       store.commit("settings/setAlertNotification", {
         text: "Task deleted successfully!",

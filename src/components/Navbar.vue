@@ -1,7 +1,7 @@
 <template>
   <q-header elevated class="q-px-md q-py-sm bg-indigo" v-if="isVisible">
-    <q-toolbar>
-      <q-btn flat round dense icon="menu" class="q-mr-sm" />
+    <q-toolbar>      
+      <!-- <q-btn flat round dense icon="menu" class="q-mr-sm" /> -->
 
       <q-toolbar-title class="text-h5">Kamban@pp</q-toolbar-title>
 

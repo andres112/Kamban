@@ -4,7 +4,8 @@
     <div class="row full-width q-col-gutter-xs">
       <column
         v-for="c in columns"
-        :key="c.colName"
+        :key="c.state"
+        :colType="c.state"
         :colSize="c.colSize"
         :colName="c.colName"
         :colColor="c.colColor"
