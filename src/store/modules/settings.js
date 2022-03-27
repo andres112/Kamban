@@ -2,6 +2,7 @@ const state = {
   navbar: { isVisible: false },
   darkMode: false,
   alertNotification: {},
+  isMobile: false,
 };
 const mutations = {
   changeNavbarVisible(state, value) {
@@ -16,6 +17,9 @@ const mutations = {
       position: payload?.position,
       type: payload?.type,
     };
+  },
+  setMobile(state, value) {
+    state.isMobile = value;
   },
 };
 const actions = {};

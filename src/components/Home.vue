@@ -1,6 +1,8 @@
 <template>
   <q-page class="flex flex-center column">
-    <h1 class="text-center q-mt-none">{{ msg }}</h1>
+    <p class="text-center q-mt-none" :class="isMobile ? 'text-h3' : 'text-h1'">
+      {{ msg }}
+    </p>
 
     <!-- Ingress button -->
     <q-btn
@@ -27,7 +29,8 @@
 <style></style>
 
 <script>
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { useStore } from "vuex";
 import Login from "@/components/user/Login.vue";
 import Register from "@/components/user/Register.vue";
 
@@ -39,13 +42,17 @@ export default {
     Register,
   },
   setup() {
+    const store = useStore();
     const isDialogOpen = ref(false);
     const isRegister = ref(false);
     const openDialog = () => {
       isDialogOpen.value = true;
       isRegister.value = false;
     };
-    return { isDialogOpen, isRegister, openDialog };
+    const isMobile = computed(() => {
+      return store.state.settings.isMobile;
+    });
+    return { isDialogOpen, isRegister, openDialog, isMobile };
   },
 };
 </script>

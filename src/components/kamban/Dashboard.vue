@@ -1,7 +1,7 @@
 <template>
   <div>
     <h5 class="q-ma-md q-py-sm">Dashboard</h5>
-    <div class="row full-width q-col-gutter-xs">
+    <div class="row full-width q-col-gutter-xs justify-center">
       <column
         v-for="c in columns"
         :key="c.state"

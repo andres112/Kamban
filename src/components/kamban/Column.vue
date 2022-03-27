@@ -1,5 +1,5 @@
 <template>
-  <div :class="`col-${colSize}`" class="q-mx-none" :key="colType">
+  <div :class="`col-md-${colSize}`" class="q-mx-none col-11" :key="colType">
     <q-toolbar
       class="bg-secondary text-white"
       :class="'bg-' + colColor ?? 'bg-secondary'"
@@ -22,11 +22,16 @@
     <q-page v-if="loading"><slot name="loading"></slot></q-page>
 
     <div
-      class="row relative-position"
+      class="row relative-position justify-center"
       v-else-if="emptyColumn && colType === 'todo'"
     >
-      <q-card flat class="q-pa-lg absolute">
-        <img src="@/assets/images/nothingtodo.svg" class="opacity-50 q-mb-sm" />
+      <q-card flat class="q-pa-xl" :class="{ absolute: !isMobile }">
+        <img
+          src="@/assets/images/nothingtodo_mobile.svg"
+          srcset="@/assets/images/nothingtodo.svg 1024w"
+          class="opacity-50 q-mb-sm"
+          style="max-width: 500px;"
+        />
         <q-card-section class="q-pt-none">
           <p class="text-center text-h6 text-bold text-grey">No tasks ToDo</p>
         </q-card-section>
@@ -74,6 +79,7 @@ import Card from "@/components/kamban/Card.vue";
 import TaskForm from "@/components/kamban/TaskForm.vue";
 import { provide, ref, computed } from "vue";
 import { useDb } from "@/hooks/useDb";
+import { useStore } from "vuex";
 import draggable from "vuedraggable";
 import CardDetails from "@/components/kamban/CardDetails.vue";
 
@@ -96,6 +102,7 @@ export default {
   },
   setup(props) {
     const { updateTask } = useDb();
+    const store = useStore();
     const isVisible = ref(false);
     const isCardOpen = ref(false);
     const setVisibility = (visibility) => {
@@ -116,12 +123,17 @@ export default {
       return props.colContent.length === 0;
     });
 
+    const isMobile = computed(() => {
+      return store.state.settings.isMobile;
+    });
+
     return {
       isVisible,
       setVisibility,
       setCardPosition,
       emptyColumn,
       isCardOpen,
+      isMobile,
     };
   },
 };
