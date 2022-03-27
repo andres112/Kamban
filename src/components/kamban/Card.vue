@@ -18,6 +18,7 @@
           unelevated
           size="0.75rem"
           class="q-pa-xs"
+          @click="openCard"
         />
       </q-card-section>
 
@@ -98,7 +99,7 @@ export default {
   props: {
     content: { type: Object, default: () => {} },
   },
-  setup(props) {
+  setup(props, { emit }) {
     // Bring function from hook
     const { deleteTask, updateTask } = useDb();
     // Bring store from vuex
@@ -153,6 +154,11 @@ export default {
       updateTask(cardContent.id, { state: state.value });
     };
 
+    const openCard = () => {
+      store.commit("tasks/setCurrentTask", props.content);
+      emit("openCard");
+    };
+
     watch(
       () => menuVisible.value,
       (newVal) => {
@@ -186,6 +192,7 @@ export default {
       editCard,
       moveCard,
       stateOptions,
+      openCard,
     };
   },
 };

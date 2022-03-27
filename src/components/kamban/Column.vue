@@ -44,12 +44,26 @@
     >
       <!-- Card components -->
       <template #item="{ element }">
-        <card :content="element" :key="element.id"></card>
+        <card
+          :content="element"
+          :key="element.id"
+          @openCard="isCardOpen = true"
+        ></card>
       </template>
     </draggable>
 
     <!-- Create new task form -->
     <task-form />
+
+    <!-- Card Details -->
+    <q-dialog
+      v-model="isCardOpen"
+      transition-show="slide-up"
+      transition-hide="slide-down"
+      @hide="isCardOpen = false"
+    >
+      <card-details />
+    </q-dialog>
 
     <!-- TODO: column for Paused tasks -->
   </div>
@@ -61,6 +75,7 @@ import TaskForm from "@/components/kamban/TaskForm.vue";
 import { provide, ref, computed } from "vue";
 import { useDb } from "@/hooks/useDb";
 import draggable from "vuedraggable";
+import CardDetails from "@/components/kamban/CardDetails.vue";
 
 export default {
   name: "Column",
@@ -77,10 +92,12 @@ export default {
     Card,
     TaskForm,
     draggable,
+    CardDetails,
   },
   setup(props) {
     const { updateTask } = useDb();
     const isVisible = ref(false);
+    const isCardOpen = ref(false);
     const setVisibility = (visibility) => {
       isVisible.value = visibility;
     };
@@ -99,7 +116,13 @@ export default {
       return props.colContent.length === 0;
     });
 
-    return { isVisible, setVisibility, setCardPosition, emptyColumn };
+    return {
+      isVisible,
+      setVisibility,
+      setCardPosition,
+      emptyColumn,
+      isCardOpen,
+    };
   },
 };
 </script>
