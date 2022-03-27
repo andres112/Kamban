@@ -14,21 +14,26 @@
         icon="add_box"
         v-if="addBtn"
         @click="setVisibility(true)"
-      />
+      >
+        <q-tooltip> Create new task</q-tooltip>
+      </q-btn>
     </q-toolbar>
 
     <q-page v-if="loading"><slot name="loading"></slot></q-page>
 
-    <q-card v-else-if="emptyColumn && colType === 'todo'" flat class="q-pa-lg">
-      <img src="@/assets/images/nothingtodo.svg" class="opacity-50 q-mb-sm" />
-      <q-card-section class="q-pt-none">
-        <p class="text-center text-h6 text-bold text-grey">No tasks to do</p>
-      </q-card-section>
-    </q-card>
-
+    <div
+      class="row relative-position"
+      v-else-if="emptyColumn && colType === 'todo'"
+    >
+      <q-card flat class="q-pa-lg absolute">
+        <img src="@/assets/images/nothingtodo.svg" class="opacity-50 q-mb-sm" />
+        <q-card-section class="q-pt-none">
+          <p class="text-center text-h6 text-bold text-grey">No tasks ToDo</p>
+        </q-card-section>
+      </q-card>
+    </div>
     <!-- Draggable elements -->
     <draggable
-      v-else
       :list="colContent"
       group="tasks"
       itemKey="id"

@@ -20,10 +20,12 @@
       </column>
     </div>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-tooltip>{{pauseVisible?'Hide Paused Tasks':'See Paused Tasks'}}</q-tooltip>
+      <q-tooltip>{{
+        pauseVisible ? "Hide Paused Tasks" : "See Paused Tasks"
+      }}</q-tooltip>
       <q-btn
         fab
-        :icon="pauseVisible ? 'visibility_off':'visibility'"
+        :icon="pauseVisible ? 'visibility_off' : 'visibility'"
         color="indigo"
         @click="pauseVisible = !pauseVisible"
       />
@@ -38,10 +40,16 @@ import { onMounted, computed, ref } from "vue";
 import { useStore } from "vuex";
 
 const COLUMNS = [
-  { colSize: 3, state: "todo", colName: "ToDo", addBtn: true },
+  {
+    colSize: 3,
+    state: "todo",
+    colName: "ToDo",
+    addBtn: true,
+    colColor: "deep-orange-9",
+  },
   { colSize: 3, state: "progress", colName: "Progress" },
   { colSize: 3, state: "done", colName: "Done" },
-  { colSize: 3, state: "pause", colName: "Paused", colColor: "red-8" },
+  { colSize: 3, state: "pause", colName: "Paused", colColor: "grey" },
 ];
 export default {
   name: "Dashboard",
