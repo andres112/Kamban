@@ -9,7 +9,7 @@
     </q-toolbar>
     <h5 class="q-mb-none q-mt-sm q-pl-md">Sign In</h5>
     <q-card-section>
-      <q-form @submit.prevent="loginWithEmailAndPassword">
+      <q-form @submit.prevent="resetPassword">
         <q-input
           v-model="email"
           label="Email"
@@ -22,30 +22,7 @@
         >
           <template #append> <q-icon name="email" /></template>
         </q-input>
-        <q-input
-          v-model="password"
-          label="Password"
-          :type="isPswVisible ? 'text' : 'password'"
-          :rules="passwordRules"
-        >
-          <template #append>
-            <q-icon
-              :name="isPswVisible ? 'visibility' : 'visibility_off'"
-              class="cursor-pointer"
-              @click="isPswVisible = !isPswVisible"
-            />
-          </template>
-        </q-input>
-        <q-btn flat dense color="grey" class="row" @click="resetPassword"
-          >Forgot password?</q-btn
-        >
-        <q-btn color="indigo" class="q-mt-lg" type="submit">Sign In</q-btn>
-        <span class="q-mt-md q-mx-sm vertical-bottom">
-          New here?
-          <span class="text-bold cursor-pointer text-indigo" @click="register">
-            Sign Up
-          </span>
-        </span>
+        <q-btn color="indigo" class="q-mt-lg" type="submit">Send email</q-btn>
       </q-form>
     </q-card-section>
 
@@ -63,13 +40,15 @@ import { useUser } from "@/hooks/useUser";
 import { ref } from "vue";
 
 export default {
-  name: "Login",
-  setup(props, { emit }) {
+  name: "RecoverPassword",
+  setup() {
     const userActions = useUser();
 
     const email = ref(null);
-    const password = ref(null);
-    const isPswVisible = ref(false);
+
+    const resetPassword = () => {
+      userActions.resetPassword(email.value);
+    };
 
     // rules for validating the form
     const emailRules = [
@@ -78,31 +57,9 @@ export default {
         /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
         "Please enter a valid email",
     ];
-    const passwordRules = [(v) => !!v || "Password is required"];
-
-    const loginWithGoogle = () => {
-      userActions.loginWithGoogle();
-    };
-    const loginWithEmailAndPassword = () => {
-      userActions.loginWithEmailAndPassword(email.value, password.value);
-    };
-
-    const register = () => {
-      emit("changeDialog");
-    };
-
-    const resetPassword = () => {
-      emit("resetPassword");
-    };
     return {
       email,
-      password,
-      isPswVisible,
-      register,
-      loginWithGoogle,
-      loginWithEmailAndPassword,
       emailRules,
-      passwordRules,
       resetPassword,
     };
   },

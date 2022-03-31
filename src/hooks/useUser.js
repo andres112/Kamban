@@ -5,6 +5,7 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
   sendEmailVerification,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth, provider } from "@/firebase.js";
 import { useRouter } from "vue-router";
@@ -63,6 +64,12 @@ export const useUser = () => {
           type: "negative",
         });
       }
+      if (error.code === "auth/wrong-password") {
+        store.commit("settings/setAlertNotification", {
+          text: "The password or email are invalid. ",
+          type: "negative",
+        });
+      }
     }
   };
   const loginWithGoogle = async () => {
@@ -111,6 +118,19 @@ export const useUser = () => {
     });
   };
 
+  const resetPassword = async (email) => {
+    try {
+      console.log(email);
+      await sendPasswordResetEmail(auth, email);
+      store.commit("settings/setAlertNotification", {
+        text: "An email with instructions to reset your password has been sent.",
+        type: "info",
+      });
+    } catch (error) {
+      console.error(error.code, error.message);
+    }
+  };
+
   return {
     registerUserWithEmailAndPassword,
     loginWithEmailAndPassword,
@@ -118,5 +138,6 @@ export const useUser = () => {
     logout,
     updateUser,
     sendEmail,
+    resetPassword,
   };
 };
