@@ -69,8 +69,6 @@
     >
       <card-details />
     </q-dialog>
-
-    <!-- TODO: column for Paused tasks -->
   </div>
 </template>
 

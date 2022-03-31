@@ -1,6 +1,5 @@
 <template>
   <q-card class="login-card">
-    <!-- TODO: pending validation of inputs -->
     <q-toolbar class="bg-indigo text-white glossy shadow-2">
       <q-toolbar-title>
         <q-icon name="whatshot" class="q-mr-sm"></q-icon>
@@ -18,6 +17,8 @@
           name="email"
           type="email"
           aria-required="true"
+          :rules="emailRules"
+          lazy-rules
         >
           <template #append> <q-icon name="email" /></template>
         </q-input>
@@ -25,6 +26,7 @@
           v-model="password"
           label="Password"
           :type="isPswVisible ? 'text' : 'password'"
+          :rules="passwordRules"
         >
           <template #append>
             <q-icon
@@ -66,6 +68,15 @@ export default {
     const password = ref(null);
     const isPswVisible = ref(false);
 
+    // rules for validating the form
+    const emailRules = [
+      (v) => !!v || "Email is required",
+      (v) =>
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
+        "Please enter a valid email",
+    ];
+    const passwordRules = [(v) => !!v || "Password is required"];
+
     const loginWithGoogle = () => {
       userActions.loginWithGoogle();
     };
@@ -83,6 +94,8 @@ export default {
       register,
       loginWithGoogle,
       loginWithEmailAndPassword,
+      emailRules,
+      passwordRules,
     };
   },
 };

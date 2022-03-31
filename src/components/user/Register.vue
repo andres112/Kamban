@@ -30,6 +30,8 @@
           name="email"
           type="email"
           aria-required="true"
+          :rules="emailRules"
+          lazy-rules
         >
           <template #append> <q-icon name="email" /></template>
         </q-input>
@@ -37,10 +39,13 @@
           v-model="password"
           label="Password"
           :type="isPswVisible ? 'text' : 'password'"
+          :rules="passwordRules"
+          :label-color="passwordsMatch ? 'green' : null"
         >
           <template #append>
             <q-icon
               :name="isPswVisible ? 'visibility' : 'visibility_off'"
+              :color="passwordsMatch ? 'green' : null"
               class="cursor-pointer"
               @click="isPswVisible = !isPswVisible"
             />
@@ -51,10 +56,14 @@
           label="Repeat Password"
           :type="isPswVisible ? 'text' : 'password'"
           hint="Ingress password again"
+          :rules="repeatPasswordRules"
+          :label-color="passwordsMatch ? 'green' : null"
+          lazy-rules
         >
           <template #append>
             <q-icon
               :name="isPswVisible ? 'visibility' : 'visibility_off'"
+              :color="passwordsMatch ? 'green' : null"
               class="cursor-pointer"
               @click="isPswVisible = !isPswVisible"
             />
@@ -77,7 +86,7 @@
 
 <script>
 import { useUser } from "@/hooks/useUser";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 export default {
   name: "Login",
@@ -106,11 +115,29 @@ export default {
       emit("changeDialog");
     };
 
+    const passwordsMatch = computed(() => {
+      return password.value && password.value === rep_password.value;
+    });
+
     // Inputs rules
     const usernameRules = [
       (val) => !!val || "Username is required",
       (val) =>
         (val.length >= 3 && val.length <= 15) || "Min 3 and max 15 characters",
+    ];
+    const emailRules = [
+      (v) => !!v || "Email is required",
+      (v) =>
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
+        "Please enter a valid email",
+    ];
+    const passwordRules = [
+      (v) => !!v || "Password is required",
+      (v) => v.length >= 6 || "Password must be at least 6 characters",
+    ];
+    const repeatPasswordRules = [
+      (v) => !!v || "Repeat Password is required",
+      (v) => v === password.value || "Passwords do not match",
     ];
 
     return {
@@ -121,7 +148,11 @@ export default {
       isPswVisible,
       registerUserWithEmailAndPassword,
       usernameRules,
+      emailRules,
+      passwordRules,
+      repeatPasswordRules,
       login,
+      passwordsMatch,
     };
   },
 };
