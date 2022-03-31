@@ -1,9 +1,17 @@
 <template>
   <q-header elevated class="q-px-md q-py-sm bg-indigo" v-if="isVisible">
-    <q-toolbar>      
+    <q-toolbar>
       <!-- <q-btn flat round dense icon="menu" class="q-mr-sm" /> -->
 
-      <q-toolbar-title class="text-h5">Kamban@pp</q-toolbar-title>
+      <q-toolbar-title>
+        <router-link
+          class="text-h5 text-white"
+          to="/main"
+          style="text-decoration: none"
+        >
+          Kamban@pp
+        </router-link>
+      </q-toolbar-title>
 
       <q-btn round class="float-right">
         <q-avatar size="xl" v-if="avatar">
@@ -14,12 +22,28 @@
           <q-list style="min-width: 150px">
             <q-item class="column justify-center items-center">
               <q-avatar size="6rem" v-if="avatar">
-                <q-img :src="avatar" alt="user avatar menu" referrerpolicy="no-referrer"/>
+                <q-img
+                  :src="avatar"
+                  alt="user avatar menu"
+                  referrerpolicy="no-referrer"
+                />
               </q-avatar>
               <q-avatar icon="face" size="6rem" v-else />
-              <small class ="q-pt-sm">{{email}}</small>
+              <p class="text-h6 q-pt-none q-mb-none">{{ displayName }}</p>
+              <small>{{ email }}</small>
             </q-item>
-            <q-item v-close-popup class="row justify-center">
+            <q-item
+              v-close-popup
+              class="row justify-center column q-gutter-y-xs"
+            >
+              <q-btn
+                color="indigo"
+                label="Profile"
+                push
+                size="md"
+                v-close-popup
+                to="/profile"
+              />
               <q-btn
                 color="red"
                 label="Sing out"
@@ -57,11 +81,14 @@ export default {
     const email = computed(() => {
       return store.state.user.userInfo?.email;
     });
+    const displayName = computed(() => {
+      return store.state.user.userInfo?.displayName;
+    });
 
     const logout = () => {
       userActions.logout();
     };
-    return { isVisible, logout, avatar, email };
+    return { isVisible, logout, avatar, email, displayName };
   },
 };
 </script>
