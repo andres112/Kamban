@@ -1,14 +1,20 @@
 <template>
   <q-card flat square class="q-pt-sm">
-    <img
+    <!-- image section -->
+    <q-img
       :src="avatar"
       referrerpolicy="no-referrer"
       class="q-pa-md q-mx-auto"
       fit="contain"
-      style="max-width: 750px; height: 500px;"
+      style="max-width: 750px; height: 500px"
       alt="user avatar"
-    />
+    >
+      <template #loading>
+        <div class="text-subtitle1 text-white">Loading...</div>
+      </template>
+    </q-img>
     <q-card-section>
+      <!-- image from url section -->
       <q-input
         v-model="imgUrl"
         label="Image from url"
@@ -20,6 +26,8 @@
       >
         <template #append> <q-icon name="link" /></template>
       </q-input>
+      <!-- image from file section -->
+      <!-- TODO: add error notifications  -->
       <q-file
         v-model="imgFile"
         label="Image from file"
@@ -28,12 +36,21 @@
         :multiple="false"
         class="q-mt-md"
         clearable
+        hint="Max. 2Mb"
       >
         <template #append> <q-icon name="attach_file" /></template>
       </q-file>
     </q-card-section>
     <q-card-actions align="center">
-      <q-btn color="blue" @click.prevent="updateAvatar()" label="Update Avatar">
+      <q-btn
+        color="blue"
+        @click.prevent="updateAvatar()"
+        label="Update Avatar"
+        :loading="loading"
+      >
+        <template #loading>
+          <q-spinner color="white" />
+        </template>
       </q-btn>
     </q-card-actions>
   </q-card>
@@ -42,6 +59,7 @@
 <script>
 import { ref, computed, watch } from "vue";
 import { useStore } from "vuex";
+import { useStorage } from "@/hooks/useStorage";
 
 export default {
   name: "AvatarManager",
@@ -50,14 +68,34 @@ export default {
     const imgUrl = ref(null);
     const imgFile = ref(null);
     const tempImg = ref(null);
+    const loading = ref(false);
+
+    const storageActions = useStorage();
 
     const avatar = computed(() => {
       const photo =
         tempImg.value ||
+        imgUrl.value || //TODO: check if url is valid
         store.state.user.userInfo?.photoURL ||
         require("@/assets/images/noavatar.svg");
       return photo;
     });
+
+    const updateAvatar = async () => {
+      loading.value = true;
+      //TODO: check errors before sending, size, format...
+      if (imgFile.value) {
+        // When image is from file
+        // 1. Upload image to firebase storage
+        await storageActions.uploadAvatar(imgFile.value);
+        // 2. Update user avatar
+      } else if (imgUrl.value) {
+        // When image is from url
+        // 1. Update user avatar directly
+        console.log("update avatar from url");
+      }
+      loading.value = false;
+    };
 
     watch(
       () => imgFile.value,
@@ -70,7 +108,6 @@ export default {
         const reader = new FileReader();
         reader.readAsDataURL(imgFile.value);
         reader.onload = () => {
-          console.log(reader.result);
           tempImg.value = reader.result;
         };
       },
@@ -82,6 +119,8 @@ export default {
       imgFile,
       avatar,
       tempImg,
+      updateAvatar,
+      loading,
     };
   },
 };
