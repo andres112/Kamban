@@ -28,7 +28,11 @@
         :icon="pauseVisible ? 'visibility_off' : 'visibility'"
         color="indigo"
         @click="pauseVisible = !pauseVisible"
-      />
+      >
+        <q-badge color="red" floating v-if="!pauseVisible" rounded>{{
+          pausedLength
+        }}</q-badge>
+      </q-btn>
     </q-page-sticky>
   </div>
 </template>
@@ -70,6 +74,10 @@ export default {
       return store.state.tasks[col_id + "List"];
     };
 
+    const pausedLength = computed(() => {
+      return store.state.tasks.pauseList.length;
+    });
+
     const columns = computed(() => {
       return pauseVisible.value
         ? COLUMNS.map((x) => {
@@ -82,7 +90,7 @@ export default {
           });
     });
 
-    return { columns, loading, listOfTasks, pauseVisible };
+    return { columns, loading, listOfTasks, pauseVisible, pausedLength };
   },
 };
 </script>
