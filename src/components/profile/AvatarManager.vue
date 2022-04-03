@@ -60,6 +60,7 @@
 import { ref, computed, watch } from "vue";
 import { useStore } from "vuex";
 import { useStorage } from "@/hooks/useStorage";
+import { useUser } from "@/hooks/useUser";
 
 export default {
   name: "AvatarManager",
@@ -71,6 +72,7 @@ export default {
     const loading = ref(false);
 
     const storageActions = useStorage();
+    const userActions = useUser();
 
     const avatar = computed(() => {
       const photo =
@@ -83,17 +85,25 @@ export default {
 
     const updateAvatar = async () => {
       loading.value = true;
+      let newImg = null;
       //TODO: check errors before sending, size, format...
       if (imgFile.value) {
         // When image is from file
         // 1. Upload image to firebase storage
         await storageActions.uploadAvatar(imgFile.value);
+        const imgUrl = await storageActions.downloadAvatar();
         // 2. Update user avatar
+        await userActions.updateUser({ photoURL: imgUrl });
+        newImg = imgUrl;
+        console.log("update avatar from file: ", imgUrl);
       } else if (imgUrl.value) {
         // When image is from url
         // 1. Update user avatar directly
-        console.log("update avatar from url");
+        await userActions.updateUser({ photoURL: imgUrl.value });
+        newImg = imgUrl.value;
+        console.log("update avatar from url: ", imgUrl.value);
       }
+      store.commit("user/setUserInfo", { photoURL: newImg });
       loading.value = false;
     };
 

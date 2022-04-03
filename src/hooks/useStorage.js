@@ -1,4 +1,4 @@
-import { ref, uploadBytes } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "@/firebase.js";
 import { useStore } from "vuex";
 
@@ -17,6 +17,16 @@ export const useStorage = () => {
     }
   };
 
-  
-  return { uploadAvatar };
+  const downloadAvatar = async () => {
+    try {
+      const imgRef = ref(storage, `users/${store.state.user.userId}/avatar`);
+      const url = await getDownloadURL(imgRef);
+      return url;
+    } catch (error) {
+      console.error(error.code, error.message);
+      return null;
+    }
+  };
+
+  return { uploadAvatar, downloadAvatar };
 };

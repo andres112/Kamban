@@ -5,7 +5,7 @@ const state = {
 };
 const mutations = {
   setUserInfo(state, payload) {
-    state.userInfo = payload;
+    state.userInfo = !payload ? null : { ...state.userInfo, ...payload };
   },
   setUserToken(state, payload) {
     state.userToken = payload;

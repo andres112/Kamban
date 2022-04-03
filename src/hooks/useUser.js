@@ -34,7 +34,7 @@ export const useUser = () => {
   };
 
   const updateUser = async (data) => {
-    const ALLOWED_PARAMS = ["displayName", "photoURL", "phoneNumber"];
+    const ALLOWED_PARAMS = ["displayName", "photoURL", "phoneNumber", "email"];
     let cleanData = {};
     for (let key in data) {
       if (ALLOWED_PARAMS.includes(key)) {
