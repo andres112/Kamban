@@ -9,6 +9,7 @@ import {
   getDoc,
   getDocs,
   addDoc,
+  setDoc,
   deleteDoc,
   updateDoc,
 } from "firebase/firestore";
@@ -17,6 +18,60 @@ export const useDb = () => {
   const store = useStore();
   const reference = collection(db, "tasks");
   const loading = ref(false);
+
+  // Create new user in firebase based on authentication data
+  const createUser = async (user) => {
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const userData = {
+        providerId: user.providerId,
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        phoneNumber: user.phoneNumber,
+        createdAt: timestamp,
+        settings: { darkMode: false, language: "en", themeColor: "indigo" },
+        categories: [],
+      };
+      await setDoc(userRef, userData);
+    } catch (error) {
+      console.error(error.code, error.message);
+    }
+  };
+
+  // get user data from firebase
+  const getUser = async (uid) => {
+    try {
+      const user = await getDoc(doc(db, "users", uid));
+      if (user.exists()) {
+        return user.data();
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error(error.code, error.message);
+      return null;
+    }
+  };
+
+  // update user profile
+  const updateUserProfile = async (payload) => {
+    try {
+      const docReference = doc(db, "users", store.state.user.userId);
+      await updateDoc(docReference, payload);
+      store.commit("settings/setAlertNotification", {
+        text: "Profile updated successfully!",
+        type: "info",
+      });
+    } catch (error) {
+      console.error(error);
+      store.commit("settings/setAlertNotification", {
+        text: "Upps!. Something happened. Check console for details.",
+        type: "negative",
+      });
+    }
+  };
 
   //   Get all documents from a collection
   const getAllTasks = async () => {
@@ -44,7 +99,7 @@ export const useDb = () => {
     } catch (error) {
       console.error(error);
       store.commit("settings/setAlertNotification", {
-        text: "Upps!. Something happened. Check console for details.",
+        text: "Ups!. Something happened. Check console for details.",
         type: "negative",
       });
     } finally {
@@ -134,6 +189,9 @@ export const useDb = () => {
     }
   };
   return {
+    createUser,
+    getUser,
+    updateUserProfile,
     getAllTasks,
     addTask,
     getTask,

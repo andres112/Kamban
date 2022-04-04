@@ -12,6 +12,7 @@ import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
 import { useLoading } from "./useLoading";
+import { useDb } from "./useDb";
 
 export const useUser = () => {
   const route = useRouter();
@@ -19,6 +20,9 @@ export const useUser = () => {
 
   //use of hook for loading
   const { show, hide } = useLoading();
+
+  // use of hook for db
+  const { createUser, getUser } = useDb();
 
   // get the current user, if null user is not signed in
 
@@ -55,6 +59,10 @@ export const useUser = () => {
       if (!user.emailVerified) {
         sendEmail("The email verification is pending. ", "warning");
       }
+      const userExist = await getUser(user.uid);
+      if (!userExist) {
+        await createUser(user);
+      }
       route.push("/main");
     } catch (error) {
       console.error(error.code, "....", error.message);
@@ -84,6 +92,10 @@ export const useUser = () => {
         //   result
         // );
         // const token = await credential.accessToken;
+        const userExist = await getUser(user.uid);
+        if (!userExist) {
+          await createUser(user);
+        }
         route.push("/main");
       }
     } catch (error) {

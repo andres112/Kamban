@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import store from "../store/index.js";
 import { currentUser } from "@/firebase.js";
+import { useDb } from "@/hooks/useDb.js";
 
 const routes = [
   {
@@ -38,19 +39,22 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const user = await currentUser();
-  console.log(user);
-  if (to.matched.some((record) => record.meta.requieresAuth) && !user) {
+  const { getUser } = useDb();
+  const auth = await currentUser();
+  if (to.matched.some((record) => record.meta.requieresAuth) && !auth) {
     next("/");
   }
+
+  const userProfile = auth ? await getUser(auth?.uid): null;
+
   // update user information
-  store.commit("user/setUserInfo", user ? user.providerData[0] : user);
+  store.commit("user/setUserInfo", userProfile);
 
   // update user id
-  store.commit("user/setUserId", user?.uid);
+  store.commit("user/setUserId", userProfile?.uid);
 
   // update user token
-  store.commit("user/setUserToken", user ? user?.stsTokenManager : null);
+  store.commit("user/setUserToken", auth ? auth?.stsTokenManager : null);
 
   // control of the navbar visibility
   store.commit(
@@ -59,7 +63,7 @@ router.beforeEach(async (to, from, next) => {
   );
 
   // if user is already auth home will be replaced by main
-  if (to.path === "/" && user) {
+  if (to.path === "/" && auth) {
     next("/main");
   }
   next();

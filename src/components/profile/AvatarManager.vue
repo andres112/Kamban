@@ -60,7 +60,7 @@
 import { ref, computed, watch } from "vue";
 import { useStore } from "vuex";
 import { useStorage } from "@/hooks/useStorage";
-import { useUser } from "@/hooks/useUser";
+import { useDb } from "@/hooks/useDb";
 
 export default {
   name: "AvatarManager",
@@ -72,7 +72,7 @@ export default {
     const loading = ref(false);
 
     const storageActions = useStorage();
-    const userActions = useUser();
+    const userDbActions = useDb();
 
     const avatar = computed(() => {
       const photo =
@@ -93,13 +93,13 @@ export default {
         await storageActions.uploadAvatar(imgFile.value);
         const imgUrl = await storageActions.downloadAvatar();
         // 2. Update user avatar
-        await userActions.updateUser({ photoURL: imgUrl });
+        await userDbActions.updateUserProfile({ photoURL: imgUrl });
         newImg = imgUrl;
         console.log("update avatar from file: ", imgUrl);
       } else if (imgUrl.value) {
         // When image is from url
         // 1. Update user avatar directly
-        await userActions.updateUser({ photoURL: imgUrl.value });
+        await userDbActions.updateUserProfile({ photoURL: imgUrl.value });
         newImg = imgUrl.value;
         console.log("update avatar from url: ", imgUrl.value);
       }
