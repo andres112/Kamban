@@ -19,7 +19,7 @@
         </template>
       </column>
     </div>
-    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+    <q-page-sticky position="bottom-right" :offset="fabPos">
       <q-tooltip>{{
         pauseVisible ? "Hide Paused Tasks" : "See Paused Tasks"
       }}</q-tooltip>
@@ -28,6 +28,8 @@
         :icon="pauseVisible ? 'visibility_off' : 'visibility'"
         color="indigo"
         @click="pauseVisible = !pauseVisible"
+        :disable="draggingFab"
+        v-touch-pan.prevent.mouse="moveFab"
       >
         <q-badge color="red" floating v-if="!pauseVisible" rounded>{{
           pausedLength
@@ -63,6 +65,9 @@ export default {
   setup() {
     const store = useStore();
     const { loading, getAllTasks } = useDb();
+    // variable to manage the fab button dragging
+    const fabPos = ref([10, 10]); // default offset
+    const draggingFab = ref(false); // if true, the fab is being dragged
 
     const pauseVisible = ref(false);
 
@@ -90,7 +95,25 @@ export default {
           });
     });
 
-    return { columns, loading, listOfTasks, pauseVisible, pausedLength };
+    // drag fab button on screen
+    const moveFab = (ev) => {
+      draggingFab.value = ev.isFirst !== true && ev.isFinal !== true;
+      fabPos.value = [
+        fabPos.value[0] - ev.delta.x,
+        fabPos.value[1] - ev.delta.y,
+      ];
+    };
+
+    return {
+      columns,
+      loading,
+      listOfTasks,
+      pauseVisible,
+      pausedLength,
+      fabPos,
+      draggingFab,
+      moveFab,
+    };
   },
 };
 </script>

@@ -30,12 +30,20 @@
           src="@/assets/images/nothingtodo_mobile.svg"
           srcset="@/assets/images/nothingtodo.svg 1024w"
           class="opacity-50 q-mb-sm"
-          style="max-width: 500px;"
+          style="max-width: 500px"
         />
         <q-card-section class="q-pt-none">
           <p class="text-center text-h6 text-bold text-grey">No tasks ToDo</p>
         </q-card-section>
       </q-card>
+    </div>
+    <div v-if="isMobile">
+      <card
+        v-for="element of colContent"
+        :key="element.id"
+        :content="element"
+        @openCard="isCardOpen = true"
+      ></card>
     </div>
     <!-- Draggable elements -->
     <draggable
@@ -46,6 +54,7 @@
       @end="dragging = false"
       @change="setCardPosition"
       class="full-height"
+      v-else
     >
       <!-- Card components -->
       <template #item="{ element }">
